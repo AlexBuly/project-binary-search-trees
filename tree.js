@@ -8,6 +8,9 @@ export class Tree {
 
     buildTree(array) {
         array = mergeSort(array);
+       const set = new Set(array);
+       let setVals = [...set];
+       array = setVals;
         if (array.length <= 1) return array;
         let mid = Math.floor(array.length / 2);
         let node = new Node(array[mid]);
