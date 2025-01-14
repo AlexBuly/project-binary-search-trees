@@ -11,12 +11,12 @@ export class Tree {
        array = mergeSort(array);
        if (start > end) return null;
        let mid = Math.floor((start + end) / 2);
-        let node = new Node(array[mid]);
-        node.setLeft(this.buildTree(array, start, mid - 1));
-        node.setRight(this.buildTree(array, mid + 1, end));
-        this.size++;
-        this.root = node;
-        return this.root;
+       let node = new Node(array[mid]);
+       node.setLeft(this.buildTree(array, start, mid - 1));
+       node.setRight(this.buildTree(array, mid + 1, end));
+       this.size++;
+       this.root = node;
+       return this.root;
     }
 
     prettyPrint(node = this.root, prefix = "", isLeft = true) {
@@ -40,26 +40,27 @@ export class Tree {
 
       let newNode = new Node(value);
 
-      if (this.root == null) this.root = newNode;
+      //if (this.root == null) this.root = newNode;
    
       if (current.left == null && current.right == null) return current;
 
       if (newNode.data < current.data) { 
-        const insert = this.insert(value, current = current.left);
+        const insertLeft = this.insert(value, current = current.left);
         current.setLeft(newNode);   
-   
-        this.size++;  
-        return insert;
+        //return this.insert(value, current = current.left);
+        //this.size++;  
+        return insertLeft;
 
       } else if (newNode.data > current.data) {
-          const insert = this.insert(value, current = current.right);
+          const insertRight = this.insert(value, current = current.right);
           current.setRight(newNode);
-          this.size++;
-          return insert;
+          //this.size++;
+          //return this.insert(value, current = current.right)
+          return insertRight;
       }
     }
 
-    deleteItem(value) {
+    deleteItem(value, current = this.root) {
       /*
         // if leaf
         if (value.left == null && value.right == null) {
@@ -72,6 +73,22 @@ export class Tree {
             replace node with second largest node
           }
       */
+     if (current.left == null && current.right == null) return current.data = null;
+
+
+     if (value < current.data) return this.deleteItem(value, current = current.left);
+     else if (value > current.data) return this.deleteItem(value, current = current.right);
+    }
+
+    find(value, current = this.root) {
+      try {
+        if (value === current.data) return current;
+
+      return value < current.data ? this.find(value, current.left) 
+      : this.find(value, current.right);
+      } catch(error) {
+        console.log(`${value} not in tree`)
+      } 
     }
 
     getSize() {
