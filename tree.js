@@ -4,7 +4,6 @@ import { mergeSort } from "./mergeSort.js";
 export class Tree {
     constructor() {
         this.root = null;
-        this.size = 0;
     }
 
     buildTree(array, start = 0, end = array.length - 1) {
@@ -66,8 +65,6 @@ export class Tree {
         if (value.left == null && value.right == null) {
           prev.left or prev.right = null
           // if node has one child
-        } else if (value.left || value.right) {
-            prev.next = current.next
          } else if (value.left && value.right) {
             find second largest from node 
             replace node with second largest node
@@ -78,6 +75,15 @@ export class Tree {
 
      if (value < current.data) return this.deleteItem(value, current = current.left);
      else if (value > current.data) return this.deleteItem(value, current = current.right);
+
+     if (current.left == null && current.right != null) {
+      current.data = current.right.data;
+      current.right.data = null;
+     } else if (current.left != null && current.right == null) {
+        current.data = current.left.data;
+        current.left.data = null; 
+     }
+
     }
 
     find(value, current = this.root) {
@@ -91,8 +97,50 @@ export class Tree {
       } 
     }
 
-    getSize() {
-      return this.size;
+    levelOrder(callback, root = this.root) {
+      if (!callback) {
+        throw new Error("Callback required for levelOrder");
+      }
+      if (root === null) return;
+      
+      let queue = [];
+      queue.push(root);
+      while (queue.length != 0) {
+        let current = queue[0];
+        callback(current);
+        if (current.left != null) queue.push(current.left);
+        if (current.right != null) queue.push(current.right);
+        queue.shift();
+
+      }
     }
-     
+
+    inOrder(callback, root = this.root) {
+      if (!callback) throw new Error("Callback required for inOrder");
+      //if (this.root === null) return;
+      
+      if (root !== null) {
+        this.inOrder(callback, root.left);
+        callback(root);
+        this.inOrder(callback, root.right);
+      }
+    }
+
+    preOrder(callback, root = this.root) {
+      if (!callback) throw new Error("Callback required for preOrder")
+      if (root !== null) {
+        callback(root);
+        this.preOrder(callback, root.left);
+        this.preOrder(callback, root.right);
+      }
+    }
+
+    postOrder(callback, root = this.root) {
+      if (!callback) throw new Element("Callback required for postOrder")
+      if (root !== null) {
+        this.preOrder(callback, root.left);
+        this.preOrder(callback, root.right);
+        callback(root);
+      }
+    }
 }
