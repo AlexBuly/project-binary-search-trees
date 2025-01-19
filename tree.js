@@ -35,56 +35,58 @@ export class Tree {
           }
     }
 
-    insert(value, current = this.root) {
-
+    insert(value) {
       let newNode = new Node(value);
 
-      //if (this.root == null) this.root = newNode;
-   
-      if (current.left == null && current.right == null) return current;
+      if (this.root === null) this.root = newNode; 
+      this.insertNode(this.root, newNode);  
+    }
 
-      if (newNode.data < current.data) { 
-        const insertLeft = this.insert(value, current = current.left);
-        current.setLeft(newNode);   
-        //return this.insert(value, current = current.left);
-        //this.size++;  
-        return insertLeft;
-
-      } else if (newNode.data > current.data) {
-          const insertRight = this.insert(value, current = current.right);
-          current.setRight(newNode);
-          //this.size++;
-          //return this.insert(value, current = current.right)
-          return insertRight;
+    insertNode(current, newNode) {
+      if (newNode.data < current.data) {
+        current.left === null ? current.setLeft(newNode) : this.insertNode(current.left, newNode);
+      } else {
+        current.right === null ? current.setRight(newNode) : this.insertNode(current.right, newNode);
       }
     }
 
+    getSuccessor(curr) {
+      curr = curr.right;
+
+      while (curr !== null && curr.left !== null) {
+          curr = curr.left;
+      }
+      return curr;
+  }
+
     deleteItem(value, current = this.root) {
-      /*
-        // if leaf
-        if (value.left == null && value.right == null) {
-          prev.left or prev.right = null
-          // if node has one child
-         } else if (value.left && value.right) {
-            find second largest from node 
-            replace node with second largest node
-          }
-      */
-     if (current.left == null && current.right == null) return current.data = null;
-
-
-     if (value < current.data) return this.deleteItem(value, current = current.left);
-     else if (value > current.data) return this.deleteItem(value, current = current.right);
-
-     if (current.left == null && current.right != null) {
-      current.data = current.right.data;
-      current.right.data = null;
-     } else if (current.left != null && current.right == null) {
-        current.data = current.left.data;
-        current.left.data = null; 
-     }
-
+      if (current === null) {
+        return current;
     }
+
+     if (value < current.data) {
+      current.left = this.deleteItem(value, current.left);
+  } else if (value > current.data) {
+      current.right = this.deleteItem(value, current.right);
+  } else {
+      if (current.left === null) {
+          return current.right;
+      }
+      
+      if (current.right === null) {
+          return current.left;
+      }
+
+      let succ = this.getSuccessor(currNode);
+      current.data = succ.data;
+      current.right = this.deleteItem(succ.data, currNode.right);
+  }
+
+  return current;
+
+      
+
+}
 
     find(value, current = this.root) {
       try {
@@ -117,7 +119,6 @@ export class Tree {
 
     inOrder(callback, root = this.root) {
       if (!callback) throw new Error("Callback required for inOrder");
-      //if (this.root === null) return;
       
       if (root !== null) {
         this.inOrder(callback, root.left);
@@ -142,5 +143,5 @@ export class Tree {
         this.preOrder(callback, root.right);
         callback(root);
       }
-    }
+    }  
 }
