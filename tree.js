@@ -13,7 +13,6 @@ export class Tree {
        let node = new Node(array[mid]);
        node.setLeft(this.buildTree(array, start, mid - 1));
        node.setRight(this.buildTree(array, mid + 1, end));
-       this.size++;
        this.root = node;
        return this.root;
     }
@@ -64,34 +63,26 @@ export class Tree {
         return current;
     }
 
-     if (value < current.data) {
+  if (value < current.data) {
       current.left = this.deleteItem(value, current.left);
   } else if (value > current.data) {
       current.right = this.deleteItem(value, current.right);
   } else {
-      if (current.left === null) {
-          return current.right;
-      }
+    // when left or right is null, return current as its left or right node if one or no children
+      if (current.left === null) return current.right;
+      if (current.right === null) return current.left;
       
-      if (current.right === null) {
-          return current.left;
-      }
-
-      let succ = this.getSuccessor(currNode);
+      // when node has two, children, get successor of node, make new current furthest left node of successor
+      let succ = this.getSuccessor(current);
       current.data = succ.data;
-      current.right = this.deleteItem(succ.data, currNode.right);
+      current.right = this.deleteItem(succ.data, current.right);
   }
-
-  return current;
-
-      
-
+  return current;     
 }
 
     find(value, current = this.root) {
       try {
         if (value === current.data) return current;
-
       return value < current.data ? this.find(value, current.left) 
       : this.find(value, current.right);
       } catch(error) {
@@ -110,8 +101,10 @@ export class Tree {
       while (queue.length != 0) {
         let current = queue[0];
         callback(current);
+        // push left and right values of current into queue while visitng 
         if (current.left != null) queue.push(current.left);
         if (current.right != null) queue.push(current.right);
+        // remove from front 
         queue.shift();
 
       }
@@ -143,5 +136,40 @@ export class Tree {
         this.preOrder(callback, root.right);
         callback(root);
       }
-    }  
+    }
+    
+    height(root = this.root) {
+      if (root === null) return -1;
+      let leftHeight = this.height(root.left);
+      let rightHeight = this.height(root.right);
+      return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    depth(node, current = this.root, depth = 0) {
+      if (!current) return -1;
+      if (current === node) return depth
+
+     return node.data < current.data ? this.depth(node, current.left, depth + 1)
+     : this.depth(node, current.right, depth + 1);
+  }
+
+      isBalanced(current = this.root) {
+        if (current == null) return true;
+
+        let leftHeight = this.height(current.left);
+        let rightHeight = this.height(current.right);
+
+        return (
+          // if difference between left and right subtree is less than or equal to 1
+          Math.abs(leftHeight - rightHeight) <= 1 &&
+          this.isBalanced(current.left) &&
+          this.isBalanced(current.right)
+        );
+      }
+
+      rebalance() {
+        const values = [];
+        this.inOrder(node => values.push(node.data));
+        this.root = this.buildTree(values);
+      }
 }
